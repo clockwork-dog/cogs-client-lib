@@ -71,7 +71,7 @@
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-class"><a href="classes/cogsaudioplayer.html" class="tsd-kind-icon">Cogs<wbr>Audio<wbr>Player</a></li>
-								<li class="tsd-kind-class"><a href="classes/cogsconnection.html" class="tsd-kind-icon">Cogs<wbr>Connection</a></li>
+								<li class="tsd-kind-class tsd-has-type-parameter"><a href="classes/cogsconnection.html" class="tsd-kind-icon">Cogs<wbr>Connection</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -88,9 +88,10 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-type-alias"><a href="modules.html#cogsclientmessage" class="tsd-kind-icon">Cogs<wbr>Client<wbr>Message</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#configvalue" class="tsd-kind-icon">Config<wbr>Value</a></li>
+								<li class="tsd-kind-type-alias tsd-has-type-parameter"><a href="modules.html#eventkeyvalue" class="tsd-kind-icon">Event<wbr>Key<wbr>Value</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#eventvalue" class="tsd-kind-icon">Event<wbr>Value</a></li>
 								<li class="tsd-kind-type-alias"><a href="modules.html#mediaobjectfit" class="tsd-kind-icon">Media<wbr>Object<wbr>Fit</a></li>
-								<li class="tsd-kind-type-alias"><a href="modules.html#updatevalue" class="tsd-kind-icon">Update<wbr>Value</a></li>
+								<li class="tsd-kind-type-alias"><a href="modules.html#portvalue" class="tsd-kind-icon">Port<wbr>Value</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
@@ -111,7 +112,7 @@
 					<div class="tsd-signature tsd-kind-icon">Cogs<wbr>Client<wbr>Message<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">AdjustableTimerUpdateMessage</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">TextHintsUpdateMessage</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaClientConfigMessage</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">MediaClientMessage</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/cead71d/src/types/CogsClientMessage.ts#L36">types/CogsClientMessage.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/ffe325b/src/types/CogsClientMessage.ts#L36">types/CogsClientMessage.ts:36</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -121,9 +122,28 @@
 					<div class="tsd-signature tsd-kind-icon">Config<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/cead71d/src/types/valueTypes.ts#L2">types/valueTypes.ts:2</a></li>
+							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/ffe325b/src/types/valueTypes.ts#L2">types/valueTypes.ts:2</a></li>
 						</ul>
 					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-has-type-parameter">
+					<a name="eventkeyvalue" class="tsd-anchor"></a>
+					<h3>Event<wbr>Key<wbr>Value</h3>
+					<div class="tsd-signature tsd-kind-icon">Event<wbr>Key<wbr>Value&lt;TypeMap, Key&gt;<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Key</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-type">TypeMap</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Key</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol"> extends </span><span class="tsd-signature-type">null</span><span class="tsd-signature-symbol"> ? </span><span class="tsd-signature-symbol">{ </span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Key</span><span class="tsd-signature-symbol">; </span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">undefined</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-symbol">{ </span>key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">Key</span><span class="tsd-signature-symbol">; </span>value<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">TypeMap</span><span class="tsd-signature-symbol">[</span><span class="tsd-signature-type">Key</span><span class="tsd-signature-symbol">]</span><span class="tsd-signature-symbol"> }</span><span class="tsd-signature-symbol"> : </span><span class="tsd-signature-type">never</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/ffe325b/src/types/valueTypes.ts#L8">types/valueTypes.ts:8</a></li>
+						</ul>
+					</aside>
+					<h4 class="tsd-type-parameters-title">Type parameters</h4>
+					<ul class="tsd-type-parameters">
+						<li>
+							<h4>TypeMap<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">{}</span></h4>
+						</li>
+						<li>
+							<h4>Key<span class="tsd-signature-symbol">: </span><span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">TypeMap</span> = <span class="tsd-signature-symbol">keyof </span><span class="tsd-signature-type">TypeMap</span></h4>
+						</li>
+					</ul>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
 					<a name="eventvalue" class="tsd-anchor"></a>
@@ -131,7 +151,7 @@
 					<div class="tsd-signature tsd-kind-icon">Event<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/cead71d/src/types/valueTypes.ts#L3">types/valueTypes.ts:3</a></li>
+							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/ffe325b/src/types/valueTypes.ts#L3">types/valueTypes.ts:3</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -141,17 +161,17 @@
 					<div class="tsd-signature tsd-kind-icon">Media<wbr>Object<wbr>Fit<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">&quot;contain&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;cover&quot;</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">&quot;none&quot;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/cead71d/src/types/MediaObjectFit.ts#L1">types/MediaObjectFit.ts:1</a></li>
+							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/ffe325b/src/types/MediaObjectFit.ts#L1">types/MediaObjectFit.ts:1</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-type-alias">
-					<a name="updatevalue" class="tsd-anchor"></a>
-					<h3>Update<wbr>Value</h3>
-					<div class="tsd-signature tsd-kind-icon">Update<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
+					<a name="portvalue" class="tsd-anchor"></a>
+					<h3>Port<wbr>Value</h3>
+					<div class="tsd-signature tsd-kind-icon">Port<wbr>Value<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">number</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/cead71d/src/types/valueTypes.ts#L1">types/valueTypes.ts:1</a></li>
+							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/ffe325b/src/types/valueTypes.ts#L1">types/valueTypes.ts:1</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -168,7 +188,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/cead71d/src/helpers/urls.ts#L3">helpers/urls.ts:3</a></li>
+									<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/ffe325b/src/helpers/urls.ts#L3">helpers/urls.ts:3</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -191,7 +211,7 @@
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/cead71d/src/helpers/urls.ts#L8">helpers/urls.ts:8</a></li>
+									<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/ffe325b/src/helpers/urls.ts#L8">helpers/urls.ts:8</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -222,7 +242,7 @@
 					<li class=" tsd-kind-class">
 						<a href="classes/cogsaudioplayer.html" class="tsd-kind-icon">Cogs<wbr>Audio<wbr>Player</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/cogsconnection.html" class="tsd-kind-icon">Cogs<wbr>Connection</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -243,6 +263,9 @@
 					<li class=" tsd-kind-type-alias">
 						<a href="modules.html#configvalue" class="tsd-kind-icon">Config<wbr>Value</a>
 					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#eventkeyvalue" class="tsd-kind-icon">Event<wbr>Key<wbr>Value</a>
+					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="modules.html#eventvalue" class="tsd-kind-icon">Event<wbr>Value</a>
 					</li>
@@ -250,7 +273,7 @@
 						<a href="modules.html#mediaobjectfit" class="tsd-kind-icon">Media<wbr>Object<wbr>Fit</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#updatevalue" class="tsd-kind-icon">Update<wbr>Value</a>
+						<a href="modules.html#portvalue" class="tsd-kind-icon">Port<wbr>Value</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="modules.html#asseturl" class="tsd-kind-icon">asset<wbr>Url</a>

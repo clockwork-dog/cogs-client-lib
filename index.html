@@ -62,11 +62,14 @@
 					<h1>COGS Client library</h1>
 				</a>
 				<p>Create content for your COGS Media Master</p>
+				<a href="#documentation" id="documentation" style="color: inherit; text-decoration: none;">
+					<h2><a href="https://clockwork-dog.github.io/cogs-client-lib/">Documentation</a></h2>
+				</a>
 				<a href="#add-to-your-project" id="add-to-your-project" style="color: inherit; text-decoration: none;">
 					<h2>Add to your project</h2>
 				</a>
 				<a href="#browser" id="browser" style="color: inherit; text-decoration: none;">
-					<h2>Browser</h2>
+					<h3>Browser</h3>
 				</a>
 				<pre><code class="language-html"><span style="color: #800000">&lt;script</span><span style="color: #000000FF"> </span><span style="color: #FF0000">src</span><span style="color: #000000FF">=</span><span style="color: #0000FF">&quot;https://unpkg.com/@clockworkdog/cogs-client@0&quot;</span><span style="color: #800000">&gt;&lt;/script&gt;</span>
 </code></pre>
@@ -115,15 +118,19 @@
 <span style="color: #000000">});</span>
 <span style="color: #001080">cogsConnection</span><span style="color: #000000">.</span><span style="color: #795E26">addEventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;config&#039;</span><span style="color: #000000">, (</span><span style="color: #001080">event</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
 <span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">config</span><span style="color: #000000"> = </span><span style="color: #001080">event</span><span style="color: #000000">.</span><span style="color: #001080">detail</span><span style="color: #000000">;</span>
-<span style="color: #000000">  </span><span style="color: #008000">// Handle new config. See &#039;types/Callback.ts`</span>
+<span style="color: #000000">  </span><span style="color: #008000">// Handle new config.</span>
+<span style="color: #000000">  </span><span style="color: #008000">// `config` is of type `{ [configKey: string]: number | string | boolean }`</span>
 <span style="color: #000000">});</span>
 <span style="color: #001080">cogsConnection</span><span style="color: #000000">.</span><span style="color: #795E26">addEventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;updates&#039;</span><span style="color: #000000">, (</span><span style="color: #001080">event</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
 <span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">updates</span><span style="color: #000000"> = </span><span style="color: #001080">event</span><span style="color: #000000">.</span><span style="color: #001080">detail</span><span style="color: #000000">;</span>
-<span style="color: #000000">  </span><span style="color: #008000">// Handle port updates. See &#039;types/Callback.ts`</span>
+<span style="color: #000000">  </span><span style="color: #008000">// Handle input port updates.</span>
+<span style="color: #000000">  </span><span style="color: #008000">// `updates` is of type `{ [portName: string]: number | string | boolean }`</span>
 <span style="color: #000000">});</span>
 <span style="color: #001080">cogsConnection</span><span style="color: #000000">.</span><span style="color: #795E26">addEventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;event&#039;</span><span style="color: #000000">, (</span><span style="color: #001080">event</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
-<span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">event</span><span style="color: #000000"> = </span><span style="color: #001080">event</span><span style="color: #000000">.</span><span style="color: #001080">detail</span><span style="color: #000000">;</span>
+<span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> { </span><span style="color: #0070C1">key</span><span style="color: #000000">, </span><span style="color: #0070C1">value</span><span style="color: #000000"> } = </span><span style="color: #001080">event</span><span style="color: #000000">.</span><span style="color: #001080">detail</span><span style="color: #000000">;</span>
 <span style="color: #000000">  </span><span style="color: #008000">// Handle event. See &#039;types/Callback.ts`</span>
+<span style="color: #000000">  </span><span style="color: #008000">// `key` is the event name.</span>
+<span style="color: #000000">  </span><span style="color: #008000">// `value` is the type defined in COGS, one of `number | string | boolean | undefined`</span>
 <span style="color: #000000">});</span>
 <span style="color: #001080">cogsConnection</span><span style="color: #000000">.</span><span style="color: #795E26">addEventListener</span><span style="color: #000000">(</span><span style="color: #A31515">&#039;message&#039;</span><span style="color: #000000">, (</span><span style="color: #001080">event</span><span style="color: #000000">) </span><span style="color: #0000FF">=&gt;</span><span style="color: #000000"> {</span>
 <span style="color: #000000">  </span><span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">message</span><span style="color: #000000"> = </span><span style="color: #001080">event</span><span style="color: #000000">.</span><span style="color: #001080">detail</span><span style="color: #000000">;</span>
@@ -174,7 +181,7 @@
 					<li class=" tsd-kind-class">
 						<a href="classes/cogsaudioplayer.html" class="tsd-kind-icon">Cogs<wbr>Audio<wbr>Player</a>
 					</li>
-					<li class=" tsd-kind-class">
+					<li class=" tsd-kind-class tsd-has-type-parameter">
 						<a href="classes/cogsconnection.html" class="tsd-kind-icon">Cogs<wbr>Connection</a>
 					</li>
 					<li class=" tsd-kind-interface">
@@ -195,6 +202,9 @@
 					<li class=" tsd-kind-type-alias">
 						<a href="modules.html#configvalue" class="tsd-kind-icon">Config<wbr>Value</a>
 					</li>
+					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
+						<a href="modules.html#eventkeyvalue" class="tsd-kind-icon">Event<wbr>Key<wbr>Value</a>
+					</li>
 					<li class=" tsd-kind-type-alias">
 						<a href="modules.html#eventvalue" class="tsd-kind-icon">Event<wbr>Value</a>
 					</li>
@@ -202,7 +212,7 @@
 						<a href="modules.html#mediaobjectfit" class="tsd-kind-icon">Media<wbr>Object<wbr>Fit</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#updatevalue" class="tsd-kind-icon">Update<wbr>Value</a>
+						<a href="modules.html#portvalue" class="tsd-kind-icon">Port<wbr>Value</a>
 					</li>
 					<li class=" tsd-kind-function">
 						<a href="modules.html#asseturl" class="tsd-kind-icon">asset<wbr>Url</a>
