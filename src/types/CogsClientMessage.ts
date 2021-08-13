@@ -1,7 +1,13 @@
 import BackgroundOptions from './BackgroundOptions';
 import MediaObjectFit from './MediaObjectFit';
+import { ShowPhase } from './valueTypes';
 
 // COGS updates/events
+
+interface ShowPhaseMessage {
+  type: 'show_phase';
+  phase: ShowPhase;
+}
 
 interface AdjustableTimerUpdateMessage {
   type: 'adjustable_timer_update';
@@ -33,6 +39,11 @@ type MediaClientMessage =
   | { type: 'video_stop'; file?: string }
   | { type: 'video_set_volume'; file: string; volume: number };
 
-export type CogsClientMessage = AdjustableTimerUpdateMessage | TextHintsUpdateMessage | MediaClientConfigMessage | MediaClientMessage;
+export type CogsClientMessage =
+  | ShowPhaseMessage
+  | AdjustableTimerUpdateMessage
+  | TextHintsUpdateMessage
+  | MediaClientConfigMessage
+  | MediaClientMessage;
 
 export default CogsClientMessage;
