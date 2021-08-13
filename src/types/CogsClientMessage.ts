@@ -4,6 +4,10 @@ import { ShowPhase } from './valueTypes';
 
 // COGS updates/events
 
+interface ShowResetMessage {
+  type: 'show_reset';
+}
+
 interface ShowPhaseMessage {
   type: 'show_phase';
   phase: ShowPhase;
@@ -40,6 +44,7 @@ type MediaClientMessage =
   | { type: 'video_set_volume'; file: string; volume: number };
 
 export type CogsClientMessage =
+  | ShowResetMessage
   | ShowPhaseMessage
   | AdjustableTimerUpdateMessage
   | TextHintsUpdateMessage
