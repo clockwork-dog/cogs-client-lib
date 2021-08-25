@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>ActiveClip | @clockworkdog/cogs-client</title>
+	<title>AudioState | @clockworkdog/cogs-client</title>
 	<meta name="description" content="Documentation for @clockworkdog/cogs-client">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -55,10 +55,10 @@
 					<a href="../modules.html">@clockworkdog/cogs-client</a>
 				</li>
 				<li>
-					<a href="activeclip.html">ActiveClip</a>
+					<a href="AudioState.html">AudioState</a>
 				</li>
 			</ul>
-			<h1>Interface ActiveClip</h1>
+			<h1>Interface AudioState</h1>
 		</div>
 	</div>
 </header>
@@ -69,7 +69,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">ActiveClip</span>
+						<span class="target">AudioState</span>
 					</li>
 				</ul>
 			</section>
@@ -80,9 +80,9 @@
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="activeclip.html#loop" class="tsd-kind-icon">loop</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="activeclip.html#state" class="tsd-kind-icon">state</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="activeclip.html#volume" class="tsd-kind-icon">volume</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="AudioState.html#clips" class="tsd-kind-icon">clips</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="AudioState.html#globalVolume" class="tsd-kind-icon">global<wbr>Volume</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-interface"><a href="AudioState.html#isPlaying" class="tsd-kind-icon">is<wbr>Playing</a></li>
 							</ul>
 						</section>
 					</div>
@@ -91,32 +91,40 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="loop" class="tsd-anchor"></a>
-					<h3>loop</h3>
-					<div class="tsd-signature tsd-kind-icon">loop<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
+					<a name="clips" class="tsd-anchor"></a>
+					<h3>clips</h3>
+					<div class="tsd-signature tsd-kind-icon">clips<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-symbol">{}</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/ffe325b/src/types/AudioState.ts#L15">types/AudioState.ts:15</a></li>
+							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/211b4a1/src/types/AudioState.ts#L22">types/AudioState.ts:22</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-type-declaration">
+						<h4>Type declaration</h4>
+						<ul class="tsd-parameters">
+							<li class="tsd-parameter-index-signature">
+								<h5><span class="tsd-signature-symbol">[</span>path: <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol">]: </span><a href="AudioClip.html" class="tsd-signature-type" data-tsd-kind="Interface">AudioClip</a></h5>
+							</li>
+						</ul>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
+					<a name="globalVolume" class="tsd-anchor"></a>
+					<h3>global<wbr>Volume</h3>
+					<div class="tsd-signature tsd-kind-icon">global<wbr>Volume<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/211b4a1/src/types/AudioState.ts#L21">types/AudioState.ts:21</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="state" class="tsd-anchor"></a>
-					<h3>state</h3>
-					<div class="tsd-signature tsd-kind-icon">state<span class="tsd-signature-symbol">:</span> <a href="../enums/activeaudioclipstate.html" class="tsd-signature-type" data-tsd-kind="Enumeration">ActiveAudioClipState</a></div>
+					<a name="isPlaying" class="tsd-anchor"></a>
+					<h3>is<wbr>Playing</h3>
+					<div class="tsd-signature tsd-kind-icon">is<wbr>Playing<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">boolean</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/ffe325b/src/types/AudioState.ts#L14">types/AudioState.ts:14</a></li>
-						</ul>
-					</aside>
-				</section>
-				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-interface">
-					<a name="volume" class="tsd-anchor"></a>
-					<h3>volume</h3>
-					<div class="tsd-signature tsd-kind-icon">volume<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">number</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/ffe325b/src/types/AudioState.ts#L16">types/AudioState.ts:16</a></li>
+							<li>Defined in <a href="https://github.com/clockwork-dog/cogs-client-lib/blob/211b4a1/src/types/AudioState.ts#L20">types/AudioState.ts:20</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -133,64 +141,67 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-enum">
-						<a href="../enums/activeaudioclipstate.html" class="tsd-kind-icon">Active<wbr>Audio<wbr>Clip<wbr>State</a>
+						<a href="../enums/ActiveAudioClipState.html" class="tsd-kind-icon">Active<wbr>Audio<wbr>Clip<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="../enums/ShowPhase.html" class="tsd-kind-icon">Show<wbr>Phase</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="../classes/cogsaudioplayer.html" class="tsd-kind-icon">Cogs<wbr>Audio<wbr>Player</a>
+						<a href="../classes/CogsAudioPlayer.html" class="tsd-kind-icon">Cogs<wbr>Audio<wbr>Player</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
-						<a href="../classes/cogsconnection.html" class="tsd-kind-icon">Cogs<wbr>Connection</a>
+						<a href="../classes/CogsConnection.html" class="tsd-kind-icon">Cogs<wbr>Connection</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="ActiveClip.html" class="tsd-kind-icon">Active<wbr>Clip</a>
+					</li>
+					<li class=" tsd-kind-interface">
+						<a href="AudioClip.html" class="tsd-kind-icon">Audio<wbr>Clip</a>
 					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-interface">
-						<a href="activeclip.html" class="tsd-kind-icon">Active<wbr>Clip</a>
+						<a href="AudioState.html" class="tsd-kind-icon">Audio<wbr>State</a>
 						<ul>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="activeclip.html#loop" class="tsd-kind-icon">loop</a>
+								<a href="AudioState.html#clips" class="tsd-kind-icon">clips</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="activeclip.html#state" class="tsd-kind-icon">state</a>
+								<a href="AudioState.html#globalVolume" class="tsd-kind-icon">global<wbr>Volume</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-interface">
-								<a href="activeclip.html#volume" class="tsd-kind-icon">volume</a>
+								<a href="AudioState.html#isPlaying" class="tsd-kind-icon">is<wbr>Playing</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-interface">
-						<a href="audioclip.html" class="tsd-kind-icon">Audio<wbr>Clip</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="audiostate.html" class="tsd-kind-icon">Audio<wbr>State</a>
-					</li>
-					<li class=" tsd-kind-interface">
-						<a href="backgroundoptions.html" class="tsd-kind-icon">Background<wbr>Options</a>
+						<a href="BackgroundOptions.html" class="tsd-kind-icon">Background<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="../modules.html#cogsclientmessage" class="tsd-kind-icon">Cogs<wbr>Client<wbr>Message</a>
+						<a href="../modules.html#CogsClientMessage" class="tsd-kind-icon">Cogs<wbr>Client<wbr>Message</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="../modules.html#configvalue" class="tsd-kind-icon">Config<wbr>Value</a>
+						<a href="../modules.html#ConfigValue" class="tsd-kind-icon">Config<wbr>Value</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="../modules.html#eventkeyvalue" class="tsd-kind-icon">Event<wbr>Key<wbr>Value</a>
+						<a href="../modules.html#EventKeyValue" class="tsd-kind-icon">Event<wbr>Key<wbr>Value</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="../modules.html#eventvalue" class="tsd-kind-icon">Event<wbr>Value</a>
+						<a href="../modules.html#EventValue" class="tsd-kind-icon">Event<wbr>Value</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="../modules.html#mediaobjectfit" class="tsd-kind-icon">Media<wbr>Object<wbr>Fit</a>
+						<a href="../modules.html#MediaObjectFit" class="tsd-kind-icon">Media<wbr>Object<wbr>Fit</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="../modules.html#portvalue" class="tsd-kind-icon">Port<wbr>Value</a>
+						<a href="../modules.html#PortValue" class="tsd-kind-icon">Port<wbr>Value</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="../modules.html#asseturl" class="tsd-kind-icon">asset<wbr>Url</a>
+						<a href="../modules.html#assetUrl" class="tsd-kind-icon">asset<wbr>Url</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="../modules.html#preloadurl" class="tsd-kind-icon">preload<wbr>Url</a>
+						<a href="../modules.html#preloadUrl" class="tsd-kind-icon">preload<wbr>Url</a>
 					</li>
 				</ul>
 			</nav>

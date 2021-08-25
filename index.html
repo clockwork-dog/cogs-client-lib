@@ -142,7 +142,7 @@
 <span style="color: #000000">}</span>
 
 <span style="color: #0000FF">function</span><span style="color: #000000"> </span><span style="color: #795E26">sendPortUpdateToCogs</span><span style="color: #000000">() {</span>
-<span style="color: #000000">  </span><span style="color: #001080">cogsConnection</span><span style="color: #000000">.</span><span style="color: #795E26">sendUpdate</span><span style="color: #000000">({ </span><span style="color: #001080">port1:</span><span style="color: #000000"> </span><span style="color: #098658">100</span><span style="color: #000000"> });</span>
+<span style="color: #000000">  </span><span style="color: #001080">cogsConnection</span><span style="color: #000000">.</span><span style="color: #795E26">setOutputPortValues</span><span style="color: #000000">({ </span><span style="color: #001080">port1:</span><span style="color: #000000"> </span><span style="color: #098658">100</span><span style="color: #000000"> });</span>
 <span style="color: #000000">}</span>
 
 <span style="color: #0000FF">const</span><span style="color: #000000"> </span><span style="color: #0070C1">audioPlayer</span><span style="color: #000000"> = </span><span style="color: #0000FF">new</span><span style="color: #000000"> </span><span style="color: #795E26">CogsAudioPlayer</span><span style="color: #000000">(</span><span style="color: #001080">cogsConnection</span><span style="color: #000000">);</span>
@@ -176,49 +176,52 @@
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
 					<li class=" tsd-kind-enum">
-						<a href="enums/activeaudioclipstate.html" class="tsd-kind-icon">Active<wbr>Audio<wbr>Clip<wbr>State</a>
+						<a href="enums/ActiveAudioClipState.html" class="tsd-kind-icon">Active<wbr>Audio<wbr>Clip<wbr>State</a>
+					</li>
+					<li class=" tsd-kind-enum">
+						<a href="enums/ShowPhase.html" class="tsd-kind-icon">Show<wbr>Phase</a>
 					</li>
 					<li class=" tsd-kind-class">
-						<a href="classes/cogsaudioplayer.html" class="tsd-kind-icon">Cogs<wbr>Audio<wbr>Player</a>
+						<a href="classes/CogsAudioPlayer.html" class="tsd-kind-icon">Cogs<wbr>Audio<wbr>Player</a>
 					</li>
 					<li class=" tsd-kind-class tsd-has-type-parameter">
-						<a href="classes/cogsconnection.html" class="tsd-kind-icon">Cogs<wbr>Connection</a>
+						<a href="classes/CogsConnection.html" class="tsd-kind-icon">Cogs<wbr>Connection</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/activeclip.html" class="tsd-kind-icon">Active<wbr>Clip</a>
+						<a href="interfaces/ActiveClip.html" class="tsd-kind-icon">Active<wbr>Clip</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/audioclip.html" class="tsd-kind-icon">Audio<wbr>Clip</a>
+						<a href="interfaces/AudioClip.html" class="tsd-kind-icon">Audio<wbr>Clip</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/audiostate.html" class="tsd-kind-icon">Audio<wbr>State</a>
+						<a href="interfaces/AudioState.html" class="tsd-kind-icon">Audio<wbr>State</a>
 					</li>
 					<li class=" tsd-kind-interface">
-						<a href="interfaces/backgroundoptions.html" class="tsd-kind-icon">Background<wbr>Options</a>
+						<a href="interfaces/BackgroundOptions.html" class="tsd-kind-icon">Background<wbr>Options</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#cogsclientmessage" class="tsd-kind-icon">Cogs<wbr>Client<wbr>Message</a>
+						<a href="modules.html#CogsClientMessage" class="tsd-kind-icon">Cogs<wbr>Client<wbr>Message</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#configvalue" class="tsd-kind-icon">Config<wbr>Value</a>
+						<a href="modules.html#ConfigValue" class="tsd-kind-icon">Config<wbr>Value</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-has-type-parameter">
-						<a href="modules.html#eventkeyvalue" class="tsd-kind-icon">Event<wbr>Key<wbr>Value</a>
+						<a href="modules.html#EventKeyValue" class="tsd-kind-icon">Event<wbr>Key<wbr>Value</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#eventvalue" class="tsd-kind-icon">Event<wbr>Value</a>
+						<a href="modules.html#EventValue" class="tsd-kind-icon">Event<wbr>Value</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#mediaobjectfit" class="tsd-kind-icon">Media<wbr>Object<wbr>Fit</a>
+						<a href="modules.html#MediaObjectFit" class="tsd-kind-icon">Media<wbr>Object<wbr>Fit</a>
 					</li>
 					<li class=" tsd-kind-type-alias">
-						<a href="modules.html#portvalue" class="tsd-kind-icon">Port<wbr>Value</a>
+						<a href="modules.html#PortValue" class="tsd-kind-icon">Port<wbr>Value</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="modules.html#asseturl" class="tsd-kind-icon">asset<wbr>Url</a>
+						<a href="modules.html#assetUrl" class="tsd-kind-icon">asset<wbr>Url</a>
 					</li>
 					<li class=" tsd-kind-function">
-						<a href="modules.html#preloadurl" class="tsd-kind-icon">preload<wbr>Url</a>
+						<a href="modules.html#preloadUrl" class="tsd-kind-icon">preload<wbr>Url</a>
 					</li>
 				</ul>
 			</nav>
