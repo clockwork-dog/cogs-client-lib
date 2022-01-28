@@ -12,7 +12,8 @@ export interface VideoClip {
 export interface ActiveClip {
   path: string;
   state: ActiveVideoClipState;
-  loop: boolean;
+  loop: number;
+  currentLoop: number;
   volume: number;
 }
 

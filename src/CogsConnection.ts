@@ -1,4 +1,4 @@
-import { ConfigValue, EventKeyValue, EventValue, PortValue, ShowPhase } from './types/valueTypes';
+import { ConfigValue, EventKeyValue, EventValue, PortValue, ShowPhase } from './types/cogsValueTypes';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 import CogsClientMessage from './types/CogsClientMessage';
 import { COGS_SERVER_PORT } from './helpers/urls';

@@ -4,10 +4,13 @@ import { ActiveVideoClipState, VideoClip, VideoState } from './types/VideoState'
 import MediaClipStateMessage, { MediaStatus } from './types/MediaClipStateMessage';
 import CogsClientMessage from './types/CogsClientMessage';
 import { MediaObjectFit } from '.';
+import { loopAsNumber } from './types/NumberOfLoops';
 
 interface InternalClipPlayer extends VideoClip {
   videoElement: HTMLVideoElement;
   volume: number;
+  loop: number;
+  currentLoop: number;
 }
 
 type MediaClientConfigMessage = Extract<CogsClientMessage, { type: 'media_config_update' }>;
@@ -45,7 +48,7 @@ export default class VideoPlayer {
         case 'video_play':
           this.playVideoClip(message.file, {
             volume: message.volume,
-            loop: Boolean(message.loop),
+            loop: loopAsNumber(message.loop),
             fit: message.fit,
           });
           break;
@@ -59,7 +62,7 @@ export default class VideoPlayer {
           this.setVideoClipVolume({ volume: message.volume });
           break;
         case 'video_set_loop':
-          this.setVideoClipLoop({ loop: message.loop });
+          this.setVideoClipLoop({ loop: loopAsNumber(message.loop) });
           break;
         case 'video_set_fit':
           this.setVideoClipFit({ fit: message.fit });
@@ -105,7 +108,7 @@ export default class VideoPlayer {
     this.notifyStateListeners();
   }
 
-  playVideoClip(path: string, { volume, loop, fit }: { volume: number; loop: boolean; fit: MediaObjectFit }): void {
+  playVideoClip(path: string, { volume, loop, fit }: { volume: number; loop: number; fit: MediaObjectFit }): void {
     if (this.activeClipPath) {
       if (this.activeClipPath !== path) {
         this.stopVideoClip();
@@ -120,8 +123,9 @@ export default class VideoPlayer {
 
     this.updateVideoClipPlayer(path, (clipPlayer) => {
       clipPlayer.volume = volume;
+      clipPlayer.loop = loop;
       clipPlayer.videoElement.volume = volume * this.globalVolume;
-      clipPlayer.videoElement.loop = loop;
+      clipPlayer.videoElement.loop = loop > 1;
       clipPlayer.videoElement.style.objectFit = fit;
       if (clipPlayer.videoElement.currentTime === clipPlayer.videoElement.duration) {
         clipPlayer.videoElement.currentTime = 0;
@@ -167,14 +171,14 @@ export default class VideoPlayer {
     });
   }
 
-  setVideoClipLoop({ loop }: { loop: true | undefined }): void {
+  setVideoClipLoop({ loop }: { loop: number }): void {
     if (!this.activeClipPath) {
       return;
     }
 
     this.updateVideoClipPlayer(this.activeClipPath, (clipPlayer) => {
       if (clipPlayer.videoElement) {
-        clipPlayer.videoElement.loop = loop || false;
+        clipPlayer.videoElement.loop = loop > 1;
       }
       return clipPlayer;
     });
@@ -189,6 +193,13 @@ export default class VideoPlayer {
       if (clipPlayer.videoElement) {
         clipPlayer.videoElement.style.objectFit = fit;
       }
+      return clipPlayer;
+    });
+  }
+
+  private handleLoopedClip(path: string) {
+    this.updateVideoClipPlayer(path, (clipPlayer) => {
+      clipPlayer.currentLoop++;
       return clipPlayer;
     });
   }
@@ -263,7 +274,8 @@ export default class VideoPlayer {
         ? {
             path: this.activeClipPath,
             state: !this.videoClipPlayers[this.activeClipPath].videoElement?.paused ? ActiveVideoClipState.Playing : ActiveVideoClipState.Paused,
-            loop: this.videoClipPlayers[this.activeClipPath].videoElement?.loop ?? false,
+            loop: this.videoClipPlayers[this.activeClipPath].loop,
+            currentLoop: this.videoClipPlayers[this.activeClipPath].currentLoop,
             volume: this.videoClipPlayers[this.activeClipPath].videoElement?.volume ?? 0,
           }
         : undefined,
@@ -301,14 +313,6 @@ export default class VideoPlayer {
     videoElement.loop = false;
     videoElement.volume = this.globalVolume * volume;
     videoElement.preload = config.preload ? 'metadata' : 'none';
-    videoElement.addEventListener('playing', () => {
-      this.notifyClipStateListeners(path, 'playing');
-    });
-    videoElement.addEventListener('ended', () => {
-      if (!videoElement.loop) {
-        this.handleStoppedClip(path);
-      }
-    });
     videoElement.style.position = 'absolute';
     videoElement.style.top = '0';
     videoElement.style.left = '0';
@@ -322,11 +326,19 @@ export default class VideoPlayer {
 
   private createClipPlayer(path: string, config: InternalClipPlayer['config']): InternalClipPlayer {
     const volume = 1;
-    return {
-      config,
-      videoElement: this.createVideoElement(path, config, { volume }),
-      volume,
-    };
+    const videoElement = this.createVideoElement(path, config, { volume });
+    const player = { config, videoElement, volume, currentLoop: 1, loop: 1 };
+    videoElement.addEventListener('playing', () => {
+      this.notifyClipStateListeners(path, 'playing');
+    });
+    videoElement.addEventListener('ended', () => {
+      if (videoElement.loop && player.currentLoop < player.loop) {
+        this.handleLoopedClip(path);
+      } else {
+        this.handleStoppedClip(path);
+      }
+    });
+    return player;
   }
 
   private unloadClip(path: string) {

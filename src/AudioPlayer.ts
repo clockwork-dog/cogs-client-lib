@@ -4,6 +4,7 @@ import { assetUrl } from './helpers/urls';
 import { ActiveAudioClipState, ActiveClip, AudioClip, AudioState } from './types/AudioState';
 import MediaClipStateMessage, { MediaStatus } from './types/MediaClipStateMessage';
 import CogsClientMessage from './types/CogsClientMessage';
+import { loopAsNumber } from './types/NumberOfLoops';
 
 interface InternalClipPlayer extends AudioClip {
   player: Howl;
@@ -38,7 +39,7 @@ export default class AudioPlayer {
         case 'audio_play':
           this.playAudioClip(message.file, {
             volume: message.volume,
-            loop: Boolean(message.loop),
+            loop: loopAsNumber(message.loop),
             fade: message.fade,
           });
           break;
@@ -56,7 +57,7 @@ export default class AudioPlayer {
           this.setAudioClipVolume(message.file, { volume: message.volume, fade: message.fade });
           break;
         case 'audio_set_loop':
-          this.setAudioClipLoop(message.file, { loop: message.loop });
+          this.setAudioClipLoop(message.file, { loop: loopAsNumber(message.loop) });
           break;
       }
     });
@@ -87,7 +88,7 @@ export default class AudioPlayer {
     this.notifyStateListeners();
   }
 
-  playAudioClip(path: string, { volume, fade, loop }: { volume: number; fade?: number; loop: boolean }): void {
+  playAudioClip(path: string, { volume, fade, loop }: { volume: number; fade?: number; loop: number }): void {
     if (!(path in this.audioClipPlayers)) {
       this.audioClipPlayers[path] = this.createClip(path, { preload: false, ephemeral: true });
     }
@@ -118,18 +119,26 @@ export default class AudioPlayer {
         clipPlayer.player.off('fade', undefined, soundId);
         clipPlayer.player.off('end', undefined, soundId);
         clipPlayer.player.off('stop', undefined, soundId);
-        clipPlayer.player.loop(loop, soundId);
-
-        clipPlayer.player.once('stop', () => this.handleStoppedClip(path, soundId), soundId);
+        clipPlayer.player.loop(loop > 1, soundId);
 
         // Looping clips fire the 'end' callback on every loop
-        if (!loop) {
-          clipPlayer.player.once('end', () => this.handleStoppedClip(path, soundId), soundId);
-        }
+        clipPlayer.player.on(
+          'end',
+          (soundId) => {
+            if (clipPlayer.activeClips[soundId].currentLoop < loop) {
+              this.handleLoopedClip(path, soundId);
+            } else {
+              clipPlayer.player.stop();
+              this.handleStoppedClip(path, soundId);
+            }
+          },
+          soundId
+        );
 
         const activeClip: ActiveClip = {
           state: ActiveAudioClipState.Playing,
           loop,
+          currentLoop: 1,
           volume,
         };
 
@@ -257,7 +266,7 @@ export default class AudioPlayer {
     });
   }
 
-  setAudioClipLoop(path: string, { loop }: { loop: true | undefined }): void {
+  setAudioClipLoop(path: string, { loop }: { loop: number }): void {
     this.updateAudioClipPlayer(path, (clipPlayer) => {
       return {
         ...clipPlayer,
@@ -265,7 +274,7 @@ export default class AudioPlayer {
           Object.entries(clipPlayer.activeClips).map(([soundIdStr, clip]) => {
             if (clip.state !== ActiveAudioClipState.Stopping) {
               const soundId = parseInt(soundIdStr);
-              clipPlayer.player.loop(loop || false, soundId);
+              clipPlayer.player.loop(loop > 1, soundId);
               return [soundIdStr, { ...clip, loop }] as const;
             } else {
               return [soundIdStr, clip] as const;
@@ -273,6 +282,13 @@ export default class AudioPlayer {
           })
         ),
       };
+    });
+  }
+
+  private handleLoopedClip(path: string, soundId: number) {
+    this.updateAudioClipPlayer(path, (clipPlayer) => {
+      clipPlayer.activeClips[soundId].currentLoop++;
+      return clipPlayer;
     });
   }
 
@@ -396,8 +412,10 @@ export default class AudioPlayer {
       onplay: () => this.notifyClipStateListeners(path, 'playing'),
       onpause: () => this.notifyClipStateListeners(path, 'paused'),
       // Finished playing the clip, or one loop of it
-      onend: () => {
-        if (!player.loop()) {
+      onend: (soundId) => {
+        const loop = this.audioClipPlayers[path]?.activeClips[soundId]?.loop ?? 1;
+        const currentLoop = this.audioClipPlayers[path]?.activeClips[soundId]?.currentLoop ?? 1;
+        if (currentLoop === loop) {
           this.notifyClipStateListeners(path, 'stopped');
         }
       },

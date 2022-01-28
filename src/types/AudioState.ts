@@ -12,7 +12,8 @@ export interface AudioClip {
 
 export interface ActiveClip {
   state: ActiveAudioClipState;
-  loop: boolean;
+  loop: number;
+  currentLoop: number;
   volume: number;
 }
 
