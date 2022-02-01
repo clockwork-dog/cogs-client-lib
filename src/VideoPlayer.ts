@@ -24,7 +24,9 @@ export default class VideoPlayer {
   private globalVolume = 1;
   private videoClipPlayers: { [path: string]: InternalClipPlayer } = {};
   private activeClip?: { path: string; playId: string };
+  private pendingClip?: { path: string; playId: string; actionOncePlaying: 'play' | 'pause' | 'stop' };
   private parentElement: HTMLElement;
+  private playRequest = 0;
 
   constructor(cogsConnection: CogsConnection, parentElement: HTMLElement = DEFAULT_PARENT_ELEMENT) {
     this.parentElement = parentElement;
@@ -43,6 +45,7 @@ export default class VideoPlayer {
           this.updateConfig(message.files);
           break;
         case 'video_play':
+          this.playRequest = Date.now();
           this.playVideoClip(message.file, {
             playId: message.playId,
             volume: message.volume,
@@ -104,18 +107,21 @@ export default class VideoPlayer {
   }
 
   playVideoClip(path: string, { playId, volume, loop, fit }: { playId: string; volume: number; loop: boolean; fit: MediaObjectFit }): void {
-    if (this.activeClip) {
-      if (this.activeClip.path !== path) {
-        this.stopVideoClip();
-      }
-    } else {
-      if (!this.videoClipPlayers[path]) {
-        this.videoClipPlayers[path] = this.createClipPlayer(path, { preload: false, ephemeral: true, fit });
-      }
+    if (!this.videoClipPlayers[path]) {
+      this.videoClipPlayers[path] = this.createClipPlayer(path, { preload: false, ephemeral: true, fit });
     }
 
-    this.activeClip = { path, playId };
+    // Check if there's already a pending clip, which has now been superseded
+    if (this.pendingClip) {
+      this.pendingClip.actionOncePlaying = 'stop';
+    }
 
+    // New pending clip is video being requested
+    if (this.activeClip?.path !== path) {
+      this.pendingClip = { path, playId, actionOncePlaying: 'play' };
+    }
+
+    // Setup and play the pending clip's player
     this.updateVideoClipPlayer(path, (clipPlayer) => {
       clipPlayer.volume = volume;
       clipPlayer.videoElement.volume = volume * this.globalVolume;
@@ -125,13 +131,15 @@ export default class VideoPlayer {
         clipPlayer.videoElement.currentTime = 0;
       }
       clipPlayer.videoElement.play();
-      clipPlayer.videoElement.style.display = 'block';
       return clipPlayer;
     });
   }
 
   pauseVideoClip(): void {
-    if (this.activeClip) {
+    if (this.pendingClip) {
+      // Pending clip which we flag as should be paused as soon as it starts playing
+      this.pendingClip.actionOncePlaying = 'pause';
+    } else if (this.activeClip) {
       const { playId, path } = this.activeClip;
       this.updateVideoClipPlayer(path, (clipPlayer) => {
         clipPlayer.videoElement?.pause();
@@ -142,13 +150,19 @@ export default class VideoPlayer {
   }
 
   stopVideoClip(): void {
+    if (this.pendingClip) {
+      this.pendingClip.actionOncePlaying = 'stop';
+    }
     if (this.activeClip) {
       this.handleStoppedClip(this.activeClip.path);
     }
   }
 
   setVideoClipVolume({ volume }: { volume: number }): void {
-    if (!this.activeClip) {
+    // If pending clip, this is latest to have been played so update its volume
+    const clipToUpdate = this.pendingClip ?? this.activeClip ?? undefined;
+
+    if (!clipToUpdate) {
       return;
     }
 
@@ -157,7 +171,7 @@ export default class VideoPlayer {
       return;
     }
 
-    this.updateVideoClipPlayer(this.activeClip.path, (clipPlayer) => {
+    this.updateVideoClipPlayer(clipToUpdate.path, (clipPlayer) => {
       if (clipPlayer.videoElement) {
         clipPlayer.videoElement.volume = volume * this.globalVolume;
       }
@@ -166,11 +180,14 @@ export default class VideoPlayer {
   }
 
   setVideoClipLoop({ loop }: { loop: true | undefined }): void {
-    if (!this.activeClip) {
+    // If pending clip, this is latest to have been played so update its loop
+    const clipToUpdate = this.pendingClip ?? this.activeClip ?? undefined;
+
+    if (!clipToUpdate) {
       return;
     }
 
-    this.updateVideoClipPlayer(this.activeClip.path, (clipPlayer) => {
+    this.updateVideoClipPlayer(clipToUpdate.path, (clipPlayer) => {
       if (clipPlayer.videoElement) {
         clipPlayer.videoElement.loop = loop || false;
       }
@@ -179,11 +196,14 @@ export default class VideoPlayer {
   }
 
   setVideoClipFit({ fit }: { fit: MediaObjectFit }): void {
-    if (!this.activeClip) {
+    // If pending clip, this is latest to have been played so update its fit
+    const clipToUpdate = this.pendingClip ?? this.activeClip ?? undefined;
+
+    if (!clipToUpdate) {
       return;
     }
 
-    this.updateVideoClipPlayer(this.activeClip.path, (clipPlayer) => {
+    this.updateVideoClipPlayer(clipToUpdate.path, (clipPlayer) => {
       if (clipPlayer.videoElement) {
         clipPlayer.videoElement.style.objectFit = fit;
       }
@@ -303,14 +323,50 @@ export default class VideoPlayer {
     videoElement.autoplay = false;
     videoElement.loop = false;
     videoElement.volume = this.globalVolume * volume;
-    videoElement.preload = config.preload ? 'metadata' : 'none';
+    videoElement.preload = config.preload ? 'auto' : 'none';
     videoElement.addEventListener('playing', () => {
-      if (this.activeClip?.path === path) {
-        this.notifyClipStateListeners(this.activeClip.playId, path, 'playing');
+      // Once the video element starts playing, show it
+      if (this.pendingClip?.path === path) {
+        // Stop active clip if there is one
+        if (this.activeClip) {
+          this.handleStoppedClip(this.activeClip.path);
+        }
+
+        // Performance logging
+        const timeToPlay = Date.now() - this.playRequest;
+        console.log(`Playing in ${timeToPlay}ms`);
+
+        switch (this.pendingClip.actionOncePlaying) {
+          case 'play': {
+            videoElement.style.display = 'block';
+            this.notifyClipStateListeners(this.pendingClip.playId, path, 'playing');
+            break;
+          }
+          case 'pause': {
+            videoElement.style.display = 'block';
+            videoElement.pause();
+            this.notifyClipStateListeners(this.pendingClip.playId, path, 'paused');
+            break;
+          }
+          case 'stop': {
+            videoElement.pause();
+            this.notifyClipStateListeners(this.pendingClip.playId, path, 'stopped');
+            break;
+          }
+        }
+
+        this.activeClip = this.pendingClip;
+        this.pendingClip = undefined;
+      }
+      // Otherwise it shouldn't be playing, so pause it.
+      // Can happen e.g.
+      else {
+        videoElement.pause();
       }
     });
     videoElement.addEventListener('ended', () => {
-      if (!videoElement.loop) {
+      // Ignore if there's a pending clip, as once that starts playing the active clip will be stopped
+      if (!this.pendingClip && !videoElement.loop) {
         this.handleStoppedClip(path);
       }
     });
