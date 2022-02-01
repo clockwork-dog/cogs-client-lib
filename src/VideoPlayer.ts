@@ -357,9 +357,11 @@ export default class VideoPlayer {
 
         this.activeClip = this.pendingClip;
         this.pendingClip = undefined;
+      } else if (this.activeClip?.path === path) {
+        this.notifyClipStateListeners(this.activeClip.playId, path, 'playing');
       }
       // Otherwise it shouldn't be playing, so pause it.
-      // Can happen e.g.
+      // Can happen e.g. multiple clips queued up to start playing
       else {
         videoElement.pause();
       }
