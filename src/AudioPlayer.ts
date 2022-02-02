@@ -56,9 +56,6 @@ export default class AudioPlayer {
         case 'audio_set_clip_volume':
           this.setAudioClipVolume(message.file, { volume: message.volume, fade: message.fade });
           break;
-        case 'audio_set_loop':
-          this.setAudioClipLoop(message.file, { loop: message.loop });
-          break;
       }
     });
 
@@ -104,45 +101,43 @@ export default class AudioPlayer {
       });
 
       // If no currently paused/pausing clips, play a new clip
-      const newSoundIds =
-        pausedSoundIds.length > 0
-          ? []
-          : [
-              (() => {
-                const soundId = clipPlayer.player.play();
-                return soundId;
-              })(),
-            ];
+      const newSoundIds = pausedSoundIds.length > 0 ? [] : [clipPlayer.player.play()];
+
+      console.log('newSoundIds', newSoundIds);
 
       [...pausedSoundIds, ...newSoundIds].forEach((soundId) => {
+        console.log('looping', JSON.stringify(soundId), loop, clipPlayer.player);
+        clipPlayer.player.loop(loop, soundId);
+
         // Cleanup any old callbacks first
         clipPlayer.player.off('play', undefined, soundId);
         clipPlayer.player.off('pause', undefined, soundId);
         clipPlayer.player.off('fade', undefined, soundId);
         clipPlayer.player.off('end', undefined, soundId);
         clipPlayer.player.off('stop', undefined, soundId);
-        clipPlayer.player.loop(loop, soundId);
 
         clipPlayer.player.once(
           'stop',
           () => {
-            this.notifyClipStateListeners(playId, path, 'stopped');
+            console.log('stop. loop:', !clipPlayer.activeClips[soundId]?.loop);
             this.handleStoppedClip(path, soundId);
+            this.notifyClipStateListeners(playId, path, 'stopped');
           },
           soundId
         );
 
         // Looping clips fire the 'end' callback on every loop
-        if (!loop) {
-          clipPlayer.player.once(
-            'end',
-            () => {
+        clipPlayer.player.on(
+          'end',
+          () => {
+            console.log('end. loop:', !clipPlayer.activeClips[soundId]?.loop);
+            if (!clipPlayer.activeClips[soundId]?.loop) {
               this.handleStoppedClip(path, soundId);
               this.notifyClipStateListeners(playId, path, 'stopped');
-            },
-            soundId
-          );
-        }
+            }
+          },
+          soundId
+        );
 
         const activeClip: ActiveClip = {
           playId,
@@ -150,6 +145,10 @@ export default class AudioPlayer {
           loop,
           volume,
         };
+
+        setInterval(() => {
+          console.log('loop?', clipPlayer.player.loop());
+        }, 1000);
 
         // Start fade when clip starts
         if (isFadeValid(fade)) {
@@ -267,25 +266,6 @@ export default class AudioPlayer {
               }
 
               return [soundIdStr, { ...clip, volume }] as const;
-            } else {
-              return [soundIdStr, clip] as const;
-            }
-          })
-        ),
-      };
-    });
-  }
-
-  setAudioClipLoop(path: string, { loop }: { loop: true | undefined }): void {
-    this.updateAudioClipPlayer(path, (clipPlayer) => {
-      return {
-        ...clipPlayer,
-        activeClips: Object.fromEntries(
-          Object.entries(clipPlayer.activeClips).map(([soundIdStr, clip]) => {
-            if (clip.state !== ActiveAudioClipState.Stopping) {
-              const soundId = parseInt(soundIdStr);
-              clipPlayer.player.loop(loop || false, soundId);
-              return [soundIdStr, { ...clip, loop }] as const;
             } else {
               return [soundIdStr, clip] as const;
             }
