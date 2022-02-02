@@ -113,7 +113,10 @@ export default class VideoPlayer {
 
     // Check if there's already a pending clip, which has now been superseded
     if (this.pendingClip) {
-      this.pendingClip.actionOncePlaying = 'stop';
+      this.updateVideoClipPlayer(this.pendingClip.path, (clipPlayer) => {
+        clipPlayer.videoElement.load(); // Aborts the play operation
+        return clipPlayer;
+      });
     }
 
     // New pending clip is video being requested
@@ -149,6 +152,9 @@ export default class VideoPlayer {
     }
   }
 
+  /**
+   * Stop any playing or pending video clips. No videos should be playing after this is called.
+   */
   stopVideoClip(): void {
     if (this.pendingClip) {
       this.pendingClip.actionOncePlaying = 'stop';
@@ -327,11 +333,6 @@ export default class VideoPlayer {
     videoElement.addEventListener('playing', () => {
       // Once the video element starts playing, show it
       if (this.pendingClip?.path === path) {
-        // Stop active clip if there is one
-        if (this.activeClip) {
-          this.handleStoppedClip(this.activeClip.path);
-        }
-
         // Performance logging
         const timeToPlay = Date.now() - this.playRequest;
         console.log(`Playing in ${timeToPlay}ms`);
@@ -353,6 +354,11 @@ export default class VideoPlayer {
             this.notifyClipStateListeners(this.pendingClip.playId, path, 'stopped');
             break;
           }
+        }
+
+        // Stop active clip if there is one
+        if (this.activeClip) {
+          this.handleStoppedClip(this.activeClip.path);
         }
 
         this.activeClip = this.pendingClip;
