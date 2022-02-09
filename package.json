@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "unpkg": "dist/browser/index.js",
   "scripts": {
-    "test": "jest --runInBand",
+    "test": "yarn build && jest --runInBand",
     "lint": "yarn lint:json && yarn lint:ts",
     "lint:json": "prettier --list-different .eslintrc *.json",
     "lint:ts": "eslint --ext .js,.ts --ignore-path .gitignore .",
