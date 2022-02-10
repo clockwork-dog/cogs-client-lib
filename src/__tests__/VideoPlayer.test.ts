@@ -4,6 +4,7 @@ import WS, { WebSocketServer } from 'ws';
 import { CogsClientMessage, MediaClipStateMessage } from '..';
 import { VideoState } from '../types/VideoState';
 import waitForExpect from 'wait-for-expect';
+import AllMediaClipStatesMessage from '../types/AllMediaClipStatesMessage';
 
 let fakeServer: WebSocketServer;
 let fakeClientConnection: WS;
@@ -11,7 +12,15 @@ let cogsConnection: CogsConnection;
 let videoPlayer: VideoPlayer;
 let stateListener: jest.Mock<void, [VideoState]>;
 let clipStateListener: jest.Mock<void, [MediaClipStateMessage]>;
-let fakeServerMessageListener: jest.Mock<void, [any]>;
+let fakeServerMessageListener: jest.Mock<
+  void,
+  [
+    {
+      allMediaClipStates?: AllMediaClipStatesMessage;
+      mediaClipStates?: MediaClipStateMessage;
+    }
+  ]
+>;
 
 beforeEach(async () => {
   stateListener = jest.fn();
@@ -39,7 +48,18 @@ function fakeMessageFromServer(message: CogsClientMessage) {
 }
 
 describe('config update', () => {
-  test('initial state empty', async () => {
+  test('initial clip states empty', async () => {
+    await waitForExpect(() => {
+      expect(fakeServerMessageListener).toHaveBeenCalledWith({
+        allMediaClipStates: {
+          files: [],
+          mediaType: 'video',
+        },
+      });
+    });
+  });
+
+  test('empty config => state empty', async () => {
     fakeMessageFromServer({
       type: 'media_config_update',
       files: {},
