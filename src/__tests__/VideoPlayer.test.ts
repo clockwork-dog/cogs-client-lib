@@ -85,7 +85,6 @@ describe('config update', () => {
     });
 
     await waitForExpect(() => {
-      // stateListener.mock.calls.forEach((call) => console.log(call[0].clips));
       expect(stateListener).toHaveBeenCalledWith({
         globalVolume: 1,
         isPlaying: false,
