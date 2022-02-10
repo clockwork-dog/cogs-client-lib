@@ -267,10 +267,12 @@ export default class VideoPlayer {
   }
 
   private notifyStateListeners() {
-    const VideoState: VideoState = {
+    const videoState: VideoState = {
       globalVolume: this.globalVolume,
       isPlaying: this.activeClip ? !this.videoClipPlayers[this.activeClip.path].videoElement?.paused : false,
-      clips: { ...this.videoClipPlayers },
+      clips: Object.fromEntries(
+        Object.entries(this.videoClipPlayers).map(([path, player]) => [path, { config: player.config, volume: player.volume }] as const)
+      ),
       activeClip: this.activeClip
         ? {
             path: this.activeClip.path,
@@ -280,7 +282,7 @@ export default class VideoPlayer {
           }
         : undefined,
     };
-    this.dispatchEvent('state', VideoState);
+    this.dispatchEvent('state', videoState);
   }
 
   private notifyClipStateListeners(playId: string, file: string, status: MediaStatus) {
