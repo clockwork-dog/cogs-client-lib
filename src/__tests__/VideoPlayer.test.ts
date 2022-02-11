@@ -25,6 +25,10 @@ afterEach(() => {
   fakeCogsConnection.close();
 });
 
+afterEach(() => {
+  document.getElementsByTagName('body')[0].innerHTML = '';
+});
+
 describe('config update', () => {
   test('initial clip states empty', async () => {
     await waitForExpect(() => {
@@ -45,7 +49,7 @@ describe('config update', () => {
     });
 
     await waitForExpect(() => {
-      expect(stateListener).toHaveBeenCalledWith({
+      expect(stateListener).toHaveBeenLastCalledWith({
         globalVolume: 1,
         isPlaying: false,
         clips: {},
@@ -63,7 +67,7 @@ describe('config update', () => {
     });
 
     await waitForExpect(() => {
-      expect(stateListener).toHaveBeenCalledWith({
+      expect(stateListener).toHaveBeenLastCalledWith({
         globalVolume: 1,
         isPlaying: false,
         clips: {
@@ -79,49 +83,51 @@ describe('config update', () => {
   });
 });
 
-test('play', async () => {
-  fakeCogsConnection.fakeMessageFromServer({
-    type: 'video_play',
-    file: 'foo.mp4',
-    playId: 'video1',
-    volume: 1,
-    fit: 'contain',
-  });
-
-  await waitForExpect(() => {
-    expect(stateListener).toHaveBeenCalledWith({
-      globalVolume: 1,
-      isPlaying: true,
-      activeClip: {
-        path: 'foo.mp4',
-        loop: false,
-        volume: 1,
-        state: 'playing',
-      },
-      clips: {
-        'foo.mp4': {
-          config: {
-            ephemeral: true,
-            fit: 'contain',
-            preload: false,
-          },
-          volume: 1,
-        },
-      },
-    });
-    expect(clipStateListener).toHaveBeenCalledWith({
-      playId: 'video1',
-      mediaType: 'video',
+describe('play', () => {
+  test('ephemeral', async () => {
+    fakeCogsConnection.fakeMessageFromServer({
+      type: 'video_play',
       file: 'foo.mp4',
-      status: 'playing',
+      playId: 'video1',
+      volume: 1,
+      fit: 'contain',
     });
-    expect(fakeCogsConnection.fakeServerMessageListener).toHaveBeenCalledWith({
-      mediaClipState: {
+
+    await waitForExpect(() => {
+      expect(stateListener).toHaveBeenLastCalledWith({
+        globalVolume: 1,
+        isPlaying: true,
+        activeClip: {
+          path: 'foo.mp4',
+          loop: false,
+          volume: 1,
+          state: 'playing',
+        },
+        clips: {
+          'foo.mp4': {
+            config: {
+              ephemeral: true,
+              fit: 'contain',
+              preload: false,
+            },
+            volume: 1,
+          },
+        },
+      });
+      expect(clipStateListener).toHaveBeenLastCalledWith({
         playId: 'video1',
         mediaType: 'video',
         file: 'foo.mp4',
         status: 'playing',
-      },
+      });
+      expect(fakeCogsConnection.fakeServerMessageListener).toHaveBeenLastCalledWith({
+        mediaClipState: {
+          playId: 'video1',
+          mediaType: 'video',
+          file: 'foo.mp4',
+          status: 'playing',
+        },
+      });
     });
   });
 });
