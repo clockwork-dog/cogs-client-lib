@@ -4,6 +4,7 @@ import CogsClientMessage from './types/CogsClientMessage';
 import { COGS_SERVER_PORT } from './helpers/urls';
 import MediaClipStateMessage from './types/MediaClipStateMessage';
 import AllMediaClipStatesMessage from './types/AllMediaClipStatesMessage';
+import CogsMessage from './types/CogsMessage';
 
 interface ConnectionEventListeners<
   CustomTypes extends {
@@ -18,9 +19,18 @@ interface ConnectionEventListeners<
   config: CustomTypes['config'];
   updates: Partial<CustomTypes['inputPorts']>;
   event: CustomTypes['inputEvents'] extends { [key: string]: EventValue | null } ? EventKeyValue<CustomTypes['inputEvents']> : Record<string, never>;
+  /**
+   * @ignore
+   */
+  _cogsMessage: CogsMessage;
 }
 
 export type TimerState = Omit<Extract<CogsClientMessage, { type: 'adjustable_timer_update' }>, 'type'> & { startedAt: number };
+
+export interface CogsConnectionOptions {
+  hostname?: string;
+  port?: number;
+}
 
 export default class CogsConnection<
   CustomTypes extends {
@@ -60,7 +70,7 @@ export default class CogsConnection<
   }
 
   constructor(
-    { hostname = document.location.hostname, port = COGS_SERVER_PORT }: { hostname?: string; port?: number } = {},
+    { hostname = document.location.hostname, port = COGS_SERVER_PORT }: CogsConnectionOptions = {},
     outputPortValues: CustomTypes['outputPorts'] = undefined
   ) {
     this.currentOutputPortValues = { ...outputPortValues };
@@ -83,32 +93,8 @@ export default class CogsConnection<
     this.websocket.onmessage = ({ data }) => {
       try {
         const parsed = JSON.parse(data);
-
         try {
-          if (parsed.config) {
-            this.currentConfig = parsed.config;
-            this.dispatchEvent('config', this.currentConfig);
-          } else if (parsed.updates) {
-            this.currentInputPortValues = { ...this.currentInputPortValues, ...parsed.updates };
-            this.dispatchEvent('updates', this.currentInputPortValues);
-          } else if (parsed.event && parsed.event.key) {
-            this.dispatchEvent('event', parsed.event);
-          } else if (typeof parsed.message === 'object') {
-            switch (parsed.message.type) {
-              case 'adjustable_timer_update':
-                this._timerState = {
-                  startedAt: Date.now(),
-                  durationMillis: parsed.message.durationMillis,
-                  ticking: parsed.message.ticking,
-                };
-                break;
-              case 'show_phase':
-                this._showPhase = parsed.message.phase;
-                break;
-            }
-
-            this.dispatchEvent('message', parsed.message);
-          }
+          this._handleCogsMessage(parsed);
         } catch (e) {
           console.warn('Error handling data', data, e);
         }
@@ -116,6 +102,43 @@ export default class CogsConnection<
         console.error('Unable to parse incoming data from server', data, e);
       }
     };
+  }
+
+  /**
+   * @ignore
+   */
+  _handleCogsMessage(message: {
+    config?: CustomTypes['config'];
+    updates?: Partial<CustomTypes['inputPorts']>;
+    event?: CustomTypes['inputEvents'] extends { [key: string]: EventValue | null }
+      ? EventKeyValue<CustomTypes['inputEvents']>
+      : Record<string, never>;
+    message?: CogsClientMessage;
+  }): void {
+    if (message.config) {
+      this.currentConfig = message.config;
+      this.dispatchEvent('config', this.currentConfig);
+    } else if (message.updates) {
+      this.currentInputPortValues = { ...this.currentInputPortValues, ...message.updates };
+      this.dispatchEvent('updates', this.currentInputPortValues);
+    } else if (message.event && message.event.key) {
+      this.dispatchEvent('event', message.event);
+    } else if (typeof message.message === 'object') {
+      switch (message.message.type) {
+        case 'adjustable_timer_update':
+          this._timerState = {
+            startedAt: Date.now(),
+            durationMillis: message.message.durationMillis,
+            ticking: message.message.ticking,
+          };
+          break;
+        case 'show_phase':
+          this._showPhase = message.message.phase;
+          break;
+      }
+
+      this.dispatchEvent('message', message.message);
+    }
   }
 
   public get isConnected(): boolean {
@@ -126,39 +149,38 @@ export default class CogsConnection<
     this.websocket.close();
   }
 
+  private sendToCogs(message: CogsMessage) {
+    if (this.isConnected) {
+      this.websocket.send(JSON.stringify(message));
+    }
+    this.dispatchEvent('_cogsMessage', message);
+  }
+
   public sendEvent<EventName extends keyof CustomTypes['outputEvents']>(
     eventName: EventName,
     ...[eventValue]: CustomTypes['outputEvents'][EventName] extends null ? [] : [CustomTypes['outputEvents'][EventName]]
   ): void {
     if (this.isConnected) {
-      this.websocket.send(
-        JSON.stringify({
-          event: {
-            key: eventName,
-            value: eventValue,
-          },
-        })
-      );
+      this.sendToCogs({
+        event: {
+          key: eventName as string,
+          value: eventValue as EventValue | undefined,
+        },
+      });
     }
   }
 
   public setOutputPortValues(values: Partial<CustomTypes['outputPorts']>): void {
     this.currentOutputPortValues = { ...this.currentOutputPortValues, ...values };
-    if (this.isConnected) {
-      this.websocket.send(JSON.stringify({ updates: values }));
-    }
+    this.sendToCogs({ updates: values as any });
   }
 
   sendInitialMediaClipStates(allMediaClipStates: AllMediaClipStatesMessage): void {
-    if (this.isConnected) {
-      this.websocket.send(JSON.stringify({ allMediaClipStates }));
-    }
+    this.sendToCogs({ allMediaClipStates });
   }
 
   sendMediaClipState(mediaClipState: MediaClipStateMessage): void {
-    if (this.isConnected) {
-      this.websocket.send(JSON.stringify({ mediaClipState }));
-    }
+    this.sendToCogs({ mediaClipState });
   }
 
   // Type-safe wrapper around EventTarget

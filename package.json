@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "unpkg": "dist/browser/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "tsc --build tsconfig.test.json && browserify --debug --standalone TEST test/build/test/src/*.js -o test/build/browser/index.js",
     "lint": "yarn lint:json && yarn lint:ts",
     "lint:json": "prettier --list-different .eslintrc *.json",
     "lint:ts": "eslint --ext .js,.ts --ignore-path .gitignore .",
@@ -16,13 +16,17 @@
   "author": "Clockwork Dog <info@clockwork.dog>",
   "license": "MIT",
   "devDependencies": {
+    "@types/chai": "^4.3.0",
     "@types/howler": "^2.2.4",
+    "@types/mocha": "^9.1.0",
     "@typescript-eslint/eslint-plugin": "^4.12.0",
     "@typescript-eslint/parser": "^4.12.0",
     "browserify": "^17.0.0",
+    "chai": "^4.3.6",
     "eslint": "^7.17.0",
     "eslint-config-prettier": "^7.1.0",
     "eslint-plugin-prettier": "^3.3.1",
+    "mocha": "^9.2.0",
     "prettier": "^2.2.1",
     "typescript": "^4.1.3"
   },
