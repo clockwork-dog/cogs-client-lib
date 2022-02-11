@@ -1,56 +1,34 @@
-import VideoPlayer from '../VideoPlayer';
-import CogsConnection from '../CogsConnection';
-import WS, { WebSocketServer } from 'ws';
-import { CogsClientMessage, MediaClipStateMessage } from '..';
-import { VideoState } from '../types/VideoState';
 import waitForExpect from 'wait-for-expect';
-import AllMediaClipStatesMessage from '../types/AllMediaClipStatesMessage';
+import { MediaClipStateMessage } from '..';
+import { VideoState } from '../types/VideoState';
+import VideoPlayer from '../VideoPlayer';
+import FakeCogsConnection from '../testUtils/FakeCogsConnection';
 
-let fakeServer: WebSocketServer;
-let fakeClientConnection: WS;
-let cogsConnection: CogsConnection;
+let fakeCogsConnection: FakeCogsConnection;
 let videoPlayer: VideoPlayer;
 let stateListener: jest.Mock<void, [VideoState]>;
 let clipStateListener: jest.Mock<void, [MediaClipStateMessage]>;
-let fakeServerMessageListener: jest.Mock<
-  void,
-  [
-    {
-      allMediaClipStates?: AllMediaClipStatesMessage;
-      mediaClipStates?: MediaClipStateMessage;
-    }
-  ]
->;
 
 beforeEach(async () => {
   stateListener = jest.fn();
   clipStateListener = jest.fn();
-  fakeServerMessageListener = jest.fn();
 
-  fakeServer = new WebSocketServer({ port: 1234 });
-  cogsConnection = new CogsConnection({ hostname: 'localhost', port: 1234 });
-  fakeClientConnection = await new Promise((resolve) => fakeServer.once('connection', resolve));
-  fakeClientConnection.on('message', (data) => fakeServerMessageListener(JSON.parse(data.toString())));
-  await new Promise((resolve) => cogsConnection.addEventListener('open', resolve));
+  fakeCogsConnection = new FakeCogsConnection();
+  await fakeCogsConnection.isOpen;
 
-  videoPlayer = new VideoPlayer(cogsConnection);
+  videoPlayer = new VideoPlayer(fakeCogsConnection);
   videoPlayer.addEventListener('state', ({ detail }) => stateListener(detail));
   videoPlayer.addEventListener('videoClipState', ({ detail }) => clipStateListener(detail));
 });
 
 afterEach(() => {
-  fakeClientConnection.close();
-  fakeServer.close();
+  fakeCogsConnection.close();
 });
-
-function fakeMessageFromServer(message: CogsClientMessage) {
-  fakeClientConnection.send(JSON.stringify({ message }));
-}
 
 describe('config update', () => {
   test('initial clip states empty', async () => {
     await waitForExpect(() => {
-      expect(fakeServerMessageListener).toHaveBeenCalledWith({
+      expect(fakeCogsConnection.fakeServerMessageListener).toHaveBeenCalledWith({
         allMediaClipStates: {
           files: [],
           mediaType: 'video',
@@ -60,7 +38,7 @@ describe('config update', () => {
   });
 
   test('empty config => state empty', async () => {
-    fakeMessageFromServer({
+    fakeCogsConnection.fakeMessageFromServer({
       type: 'media_config_update',
       files: {},
       globalVolume: 1,
@@ -76,7 +54,7 @@ describe('config update', () => {
   });
 
   test('preload one file', async () => {
-    fakeMessageFromServer({
+    fakeCogsConnection.fakeMessageFromServer({
       type: 'media_config_update',
       files: {
         'preload-me.mp4': { type: 'video', preload: true },
@@ -102,7 +80,7 @@ describe('config update', () => {
 });
 
 test('play', async () => {
-  fakeMessageFromServer({
+  fakeCogsConnection.fakeMessageFromServer({
     type: 'video_play',
     file: 'foo.mp4',
     playId: 'video1',
@@ -137,7 +115,7 @@ test('play', async () => {
       file: 'foo.mp4',
       status: 'playing',
     });
-    expect(fakeServerMessageListener).toHaveBeenCalledWith({
+    expect(fakeCogsConnection.fakeServerMessageListener).toHaveBeenCalledWith({
       mediaClipState: {
         playId: 'video1',
         mediaType: 'video',

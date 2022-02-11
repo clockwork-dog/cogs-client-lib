@@ -1,5 +1,5 @@
 {
-  "exclude": ["dist", "**/__tests__/*", "**/*.test.ts"],
+  "exclude": ["dist", "src/testUtils", "**/__tests__/*", "**/*.test.ts"],
   "compilerOptions": {
     /* Basic Options */
     // "incremental": true,                   /* Enable incremental compilation */
