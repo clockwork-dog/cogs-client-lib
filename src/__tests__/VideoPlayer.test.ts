@@ -25,10 +25,6 @@ afterEach(() => {
   fakeCogsConnection.close();
 });
 
-afterEach(() => {
-  document.getElementsByTagName('body')[0].innerHTML = '';
-});
-
 describe('config update', () => {
   test('initial clip states empty', async () => {
     await waitForExpect(() => {
@@ -83,8 +79,8 @@ describe('config update', () => {
   });
 });
 
-describe('play', () => {
-  test('ephemeral', async () => {
+describe('ephemeral', () => {
+  test('play', async () => {
     fakeCogsConnection.fakeMessageFromServer({
       type: 'video_play',
       file: 'foo.mp4',
@@ -126,6 +122,39 @@ describe('play', () => {
           mediaType: 'video',
           file: 'foo.mp4',
           status: 'playing',
+        },
+      });
+    });
+  });
+
+  test('play, stop', async () => {
+    fakeCogsConnection.fakeMessageFromServer({
+      type: 'video_play',
+      file: 'foo.mp4',
+      playId: 'video2',
+      volume: 1,
+      fit: 'contain',
+    });
+    fakeCogsConnection.fakeMessageFromServer({ type: 'video_stop' });
+
+    await waitForExpect(() => {
+      expect(stateListener).toHaveBeenLastCalledWith({
+        globalVolume: 1,
+        isPlaying: false,
+        clips: {},
+      });
+      expect(clipStateListener).toHaveBeenCalledWith({
+        playId: 'video2',
+        mediaType: 'video',
+        file: 'foo.mp4',
+        status: 'stopped',
+      });
+      expect(fakeCogsConnection.fakeServerMessageListener).toHaveBeenCalledWith({
+        mediaClipState: {
+          playId: 'video2',
+          mediaType: 'video',
+          file: 'foo.mp4',
+          status: 'stopped',
         },
       });
     });
