@@ -34,19 +34,19 @@ export default class CogsConnection<
   private websocket: WebSocket | ReconnectingWebSocket;
   private eventTarget = new EventTarget();
 
-  private currentConfig: CustomTypes['config'] = {} as NonNullable<CustomTypes['config']>; // Received on open connection
-  public get config(): CustomTypes['config'] {
-    return { ...this.currentConfig };
+  private currentConfig: CustomTypes['config'] | undefined = undefined; // Received on open connection
+  public get config(): CustomTypes['config'] | undefined {
+    return this.currentConfig ? { ...this.currentConfig } : undefined;
   }
 
-  private currentInputPortValues: CustomTypes['inputPorts'] = {} as NonNullable<CustomTypes['inputPorts']>; // Received on open connection
-  public get inputPortValues(): CustomTypes['inputPorts'] {
-    return { ...this.currentInputPortValues };
+  private currentInputPortValues: CustomTypes['inputPorts'] | undefined = undefined; // Received on open connection
+  public get inputPortValues(): CustomTypes['inputPorts'] | undefined {
+    return this.currentInputPortValues ? { ...this.currentInputPortValues } : undefined;
   }
 
-  private currentOutputPortValues: CustomTypes['outputPorts'] = {} as NonNullable<CustomTypes['outputPorts']>; // Sent on open connection
-  public get outputPortValues(): CustomTypes['outputPorts'] {
-    return { ...this.currentOutputPortValues };
+  private currentOutputPortValues: CustomTypes['outputPorts'] | undefined = undefined; // Sent on open connection
+  public get outputPortValues(): CustomTypes['outputPorts'] | undefined {
+    return this.currentOutputPortValues ? { ...this.currentOutputPortValues } : undefined;
   }
 
   private _showPhase: ShowPhase = ShowPhase.Setup;
@@ -71,7 +71,7 @@ export default class CogsConnection<
 
   constructor(
     { hostname = document.location.hostname, port = COGS_SERVER_PORT }: { hostname?: string; port?: number } = {},
-    outputPortValues: CustomTypes['outputPorts'] = undefined
+    outputPortValues: CustomTypes['outputPorts'] | undefined = undefined
   ) {
     this.currentOutputPortValues = { ...outputPortValues };
     const { useReconnectingWebsocket, path, pathParams } = websocketParametersFromUrl(document.location.href);
@@ -79,14 +79,13 @@ export default class CogsConnection<
     this.websocket = useReconnectingWebsocket ? new ReconnectingWebSocket(socketUrl) : new WebSocket(socketUrl);
 
     this.websocket.onopen = () => {
-      this.currentConfig = {} as CustomTypes['config']; // Received on open connection
-      this.currentInputPortValues = {} as CustomTypes['inputPorts']; // Received on open connection
-
       this.dispatchEvent('open', undefined);
       this.setOutputPortValues(this.currentOutputPortValues as NonNullable<CustomTypes['outputPorts']>);
     };
 
     this.websocket.onclose = () => {
+      this.currentConfig = undefined;
+      this.currentInputPortValues = undefined;
       this.dispatchEvent('close', undefined);
     };
 
@@ -169,7 +168,7 @@ export default class CogsConnection<
   }
 
   public setOutputPortValues(values: Partial<CustomTypes['outputPorts']>): void {
-    this.currentOutputPortValues = { ...this.currentOutputPortValues, ...values };
+    this.currentOutputPortValues = { ...(this.currentOutputPortValues as CustomTypes['outputPorts']), ...values };
     if (this.isConnected) {
       this.websocket.send(JSON.stringify({ updates: values }));
     }
