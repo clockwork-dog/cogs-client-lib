@@ -160,6 +160,9 @@ export default class AudioPlayer {
           volume,
         };
 
+        console.time('playing ' + path);
+        handlePlaying(clipPlayer.player, path);
+
         // Once clip starts, check if it should actually be paused or stopped
         // If not, then update state to 'playing'
         clipPlayer.player.once(
@@ -518,5 +521,20 @@ function setPlayerSinkId(player: Howl, sinkId: string | undefined) {
   } else {
     // TODO: handle web audio
     console.warn('Cannot set sink ID: web audio not supported', player);
+  }
+}
+
+function handlePlaying(player: Howl, path: string) {
+  if ((player as any)._html5) {
+    (player as any)._sounds.forEach((sound: { _node: HTMLAudioElement }) => {
+      const listener = () => {
+        sound._node.removeEventListener('playing', listener);
+        console.timeEnd('playing ' + path);
+      };
+      sound._node.addEventListener('playing', listener);
+    });
+  } else {
+    // TODO: handle web audio
+    console.warn('Cannot handle playing: web audio not supported', player);
   }
 }

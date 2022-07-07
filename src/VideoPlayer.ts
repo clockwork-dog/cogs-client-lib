@@ -129,6 +129,10 @@ export default class VideoPlayer {
       if (clipPlayer.videoElement.currentTime === clipPlayer.videoElement.duration) {
         clipPlayer.videoElement.currentTime = 0;
       }
+
+      console.time('playing ' + path);
+      handlePlaying(clipPlayer, path);
+
       clipPlayer.videoElement.play();
       clipPlayer.videoElement.style.display = 'block';
       return clipPlayer;
@@ -382,4 +386,12 @@ function setPlayerSinkId(player: InternalClipPlayer, sinkId: string | undefined)
   }
 
   (player.videoElement as any).setSinkId(sinkId);
+}
+
+function handlePlaying(player: InternalClipPlayer, path: string) {
+  const listener = () => {
+    player.videoElement.removeEventListener('playing', listener);
+    console.timeEnd('playing ' + path);
+  };
+  player.videoElement.addEventListener('playing', listener);
 }
