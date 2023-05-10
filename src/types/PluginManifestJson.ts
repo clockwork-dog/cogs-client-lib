@@ -12,21 +12,24 @@ export interface CogsValueTypeNumber extends CogsValueTypeBase<'number'> {
 }
 
 export type CogsValueTypeBoolean = CogsValueTypeBase<'boolean'>;
+export type CogsValueTypeColor = CogsValueTypeBase<'color'>;
 export interface CogsValueTypeOption<Options extends string[]> extends CogsValueTypeBase<'option'> {
   options: Options;
 }
 
-export type CogsValueType = CogsValueTypeString | CogsValueTypeNumber | CogsValueTypeBoolean | CogsValueTypeOption<string[]>;
+export type CogsValueType = CogsValueTypeString | CogsValueTypeNumber | CogsValueTypeBoolean | CogsValueTypeColor | CogsValueTypeOption<string[]>;
 
 export type CogsValueTypeStringWithDefault = CogsValueTypeString & { default: string };
 export type CogsValueTypeNumberWithDefault = CogsValueTypeNumber & { default: number };
 export type CogsValueTypeBooleanWithDefault = CogsValueTypeBoolean & { default: boolean };
+export type CogsValueTypeColorWithDefault = CogsValueTypeColor & { default: string };
 export type CogsValueTypeOptionWithDefault = CogsValueTypeOption<string[]> & { default: string };
 
 export type CogsValueTypeWithDefault =
   | CogsValueTypeStringWithDefault
   | CogsValueTypeNumberWithDefault
   | CogsValueTypeBooleanWithDefault
+  | CogsValueTypeColorWithDefault
   | CogsValueTypeOptionWithDefault;
 
 export type PluginManifestConfigJson = {
