@@ -107,7 +107,7 @@ export default class CogsConnection<
             switch (parsed.message.type) {
               case 'adjustable_timer_update':
                 this._timerState = {
-                  startedAt: Date.now(),
+                  startedAt: parsed.message.startedAt,
                   durationMillis: parsed.message.durationMillis,
                   ticking: parsed.message.ticking,
                 };

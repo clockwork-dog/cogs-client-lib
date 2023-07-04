@@ -16,6 +16,7 @@ interface AdjustableTimerUpdateMessage {
   type: 'adjustable_timer_update';
   ticking: boolean;
   durationMillis: number;
+  startedAt: number;
 }
 
 interface TextHintsUpdateMessage {
