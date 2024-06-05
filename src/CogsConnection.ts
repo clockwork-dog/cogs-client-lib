@@ -5,9 +5,9 @@ import CogsClientMessage from './types/CogsClientMessage';
 import { COGS_SERVER_PORT, assetUrl } from './helpers/urls';
 import MediaClipStateMessage from './types/MediaClipStateMessage';
 import AllMediaClipStatesMessage from './types/AllMediaClipStatesMessage';
-import { CogsPluginManifest, PluginManifestEventJson } from './types/CogsPluginManifest';
+import { CogsPluginManifest, CogsValueType, PluginManifestEventJson } from './types/CogsPluginManifest';
 import * as ManifestTypes from './types/ManifestTypes';
-import { DeepReadonly } from './types/utils';
+import { DeepReadonly, DistributeObject } from './types/utils';
 
 export default class CogsConnection<Manifest extends CogsPluginManifest> {
   private websocket: WebSocket | ReconnectingWebSocket;
@@ -368,7 +368,16 @@ export class CogsStateChangedEvent<CogsState> extends Event {
 
 export class CogsIncomingEvent<CogsEvent extends DeepReadonly<PluginManifestEventJson> | PluginManifestEventJson> extends Event {
   public readonly _cogsConnectionEventType = 'event';
-  constructor(public readonly name: CogsEvent['name'], public readonly value: ManifestTypes.TypeFromCogsValueType<CogsEvent['value']>) {
+  constructor(
+    public readonly name: CogsEvent['name'],
+    public readonly value: CogsEvent extends { name: string; value: CogsValueType }
+      ? ManifestTypes.TypeFromCogsValueType<CogsEvent['value']>
+      : CogsEvent extends { name: string; value: { name: string; value: CogsValueType }[] }
+      ? DistributeObject<
+          { [ValueName in CogsEvent['value'][number]['name']]: ManifestTypes.TypeFromCogsValueType<CogsEvent['value'][number]['value']> }
+        >
+      : undefined
+  ) {
     super('event');
   }
 }

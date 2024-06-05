@@ -38,7 +38,7 @@ export type PluginManifestConfigJson = {
 
 export type PluginManifestEventJson = {
   name: string;
-  value?: CogsValueType;
+  value?: CogsValueType | { name: string; value: CogsValueType }[];
 };
 
 export type PluginManifestStateJson = {

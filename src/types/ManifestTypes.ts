@@ -51,7 +51,13 @@ export type EventFromCogs<Manifest extends CogsPluginManifest> = NonNullable<Non
 
 export type EventFromCogsAsObject<Manifest extends CogsPluginManifest> = DistributeObject<
   {
-    [Name in EventNameFromCogs<Manifest>]: TypeFromCogsValueType<Extract<DeepMutable<EventFromCogs<Manifest>>, { name: Name }>['value']>;
+    [Name in EventNameFromCogs<Manifest>]: 
+      Extract<DeepMutable<EventFromCogs<Manifest>>, { name: Name }> extends { name: Name; value: infer V extends CogsValueType } ? TypeFromCogsValueType<V> :
+      Extract<DeepMutable<EventFromCogs<Manifest>>, { name: Name }> extends { name: Name; value: infer V extends { name: string; value: CogsValueType }[] } ? DistributeObject<
+        {
+          [ValueName in V[number]['name']]: TypeFromCogsValueType<V[number]['value']>
+        }
+      > : undefined;
   }
 >;
 
@@ -61,6 +67,12 @@ export type EventToCogs<Manifest extends CogsPluginManifest> = NonNullable<NonNu
 
 export type EventToCogsAsObject<Manifest extends CogsPluginManifest> = DistributeObject<
   {
-    [Name in EventNameToCogs<Manifest>]: TypeFromCogsValueType<Extract<DeepMutable<EventToCogs<Manifest>>, { name: Name }>['value']>;
+    [Name in EventNameToCogs<Manifest>]: 
+      Extract<DeepMutable<EventToCogs<Manifest>>, { name: Name }> extends { name: Name; value: infer V extends CogsValueType } ? TypeFromCogsValueType<V> :
+      Extract<DeepMutable<EventToCogs<Manifest>>, { name: Name }> extends { name: Name; value: infer V extends { name: string; value: CogsValueType }[] } ? DistributeObject<
+        {
+          [ValueName in V[number]['name']]: TypeFromCogsValueType<V[number]['value']>
+        }
+      > : undefined;
   }
 >;
