@@ -8,6 +8,7 @@ import AllMediaClipStatesMessage from './types/AllMediaClipStatesMessage';
 import { CogsPluginManifest, PluginManifestEventJson } from './types/CogsPluginManifest';
 import * as ManifestTypes from './types/ManifestTypes';
 import { DeepReadonly } from './types/utils';
+import DataStore from './DataStore';
 
 export default class CogsConnection<Manifest extends CogsPluginManifest> {
   private websocket: WebSocket | ReconnectingWebSocket;
@@ -32,6 +33,8 @@ export default class CogsConnection<Manifest extends CogsPluginManifest> {
   public get timerState(): TimerState | null {
     return this._timerState ? { ...this._timerState } : null;
   }
+
+  public store: DataStore;
 
   /**
    * Track the support for HTTP/2 assets on the client and server side
@@ -159,6 +162,11 @@ export default class CogsConnection<Manifest extends CogsPluginManifest> {
         console.error('Unable to parse incoming data from server', data, e);
       }
     };
+
+    /**
+     * Stores data in COGS
+     */
+    this.store = new DataStore(this);
 
     // Send a list of audio outputs to COGS and keep it up to date
     {
