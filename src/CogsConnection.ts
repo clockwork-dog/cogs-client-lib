@@ -232,6 +232,12 @@ export default class CogsConnection<Manifest extends CogsPluginManifest> {
     }
   }
 
+  sendDataStoreItem(key: string, value: unknown): void {
+    if (this.isConnected) {
+      this.websocket.send(JSON.stringify({ dataStoreItem: { key, value } }));
+    }
+  }
+
   /**
    * Show or hide the plugin window.
    * @param visible Whether to show or hide the window
