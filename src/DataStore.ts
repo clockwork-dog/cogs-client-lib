@@ -14,13 +14,11 @@ export default class DataStore {
     cogsConnection.addEventListener('message', ({ message }) => {
       switch (message.type) {
         case 'data_store_items':
-          this._items = message.items;
-          // TODO: notify listeners
-          break;
-        case 'data_store_item':
-          this._items[message.key] = message.value;
-          this.dispatchEvent(new DataStoreItemEvent(message.key, message.value));
-          this.dispatchEvent(new DataStoreItemsEvent(this._items));
+          this._items = { ...this._items, ...message.items };
+          Object.entries(message.items).forEach(([key, value]) => {
+            this.dispatchEvent(new DataStoreItemEvent(key, value));
+          });
+          this.dispatchEvent(new DataStoreItemsEvent(message.items));
           break;
       }
     });
@@ -34,11 +32,13 @@ export default class DataStore {
     return this._items[key];
   }
 
-  public setItem(key: string, value: unknown): this {
-    this._items[key] = value;
-    this.cogsConnection.sendDataStoreItem(key, value);
-    this.dispatchEvent(new DataStoreItemEvent(key, value));
-    this.dispatchEvent(new DataStoreItemsEvent(this._items));
+  public setItems(partialItems: { [key: string]: unknown }): this {
+    Object.entries(partialItems).forEach(([key, value]) => {
+      this._items[key] = value;
+      this.cogsConnection.sendDataStoreItem(key, value);
+      this.dispatchEvent(new DataStoreItemEvent(key, value));
+    });
+    this.dispatchEvent(new DataStoreItemsEvent(partialItems));
     return this;
   }
 

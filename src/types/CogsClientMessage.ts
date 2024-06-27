@@ -29,18 +29,10 @@ interface CogsEnvironmentMessage {
   http2AssetsServer: boolean;
 }
 
-export interface DataStoreItemClientMessage {
-  type: 'data_store_item';
-  key: string;
-  value: unknown;
-}
-
 export interface DataStoreItemsClientMessage {
   type: 'data_store_items';
   items: { [key: string]: unknown };
 }
-
-export type DataStoreClientMessage = DataStoreItemClientMessage | DataStoreItemsClientMessage;
 
 // Media
 
@@ -89,6 +81,6 @@ export type CogsClientMessage<CustomConfig = {}> =
   | (MediaClientConfigMessage & CustomConfig)
   | CogsEnvironmentMessage
   | MediaClientMessage
-  | DataStoreClientMessage;
+  | DataStoreItemsClientMessage;
 
 export default CogsClientMessage;

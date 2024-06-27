@@ -147,14 +147,17 @@ function sendPortUpdateToCogs() {
 }
 
 // Save arbitrary data to COGS
-cogsConnection.store.setItem('my-key', { foo: 1, bar: 'two' });
+cogsConnection.store.setItems({ 'my-key': { foo: 1, bar: 'two' } });
 
 // Get item from data store
 cogsConnection.store.items.getItem('my-key')
 
 // Listen for data changes
-cogsConnection.store.addEventListener('my-key', ({value}) => {
-  console.log('my-key changed:', value);
+cogsConnection.store.addEventListener('item', ({ key, value }) => {
+  console.log(key, 'changed:', value);
+});
+cogsConnection.store.addEventListener('items', ({ items }) => {
+  console.log('items changed:', items);
 });
 ```
 
