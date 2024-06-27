@@ -1,27 +1,25 @@
-import CogsConnection from './CogsConnection';
+import { DataStoreItemsClientMessage } from './types/CogsClientMessage';
 
 /**
  * A simple key-value store for storing data in COGS
  *
  * When reconnected the data will be restored.
  */
-export default class DataStore {
-  private _items: { [key: string]: unknown } = {};
+export default class DataStore<ItemsT extends { [key: string]: unknown } = { [key: string]: unknown }> {
+  private _items: ItemsT;
 
   #eventTarget = new EventTarget();
 
-  constructor(private cogsConnection: CogsConnection<any>) {
-    cogsConnection.addEventListener('message', ({ message }) => {
-      switch (message.type) {
-        case 'data_store_items':
-          this._items = { ...this._items, ...message.items };
-          Object.entries(message.items).forEach(([key, value]) => {
-            this.dispatchEvent(new DataStoreItemEvent(key, value));
-          });
-          this.dispatchEvent(new DataStoreItemsEvent(message.items));
-          break;
-      }
+  constructor(defaultItems: ItemsT) {
+    this._items = { ...defaultItems };
+  }
+
+  handleDataStoreItemsMessage(message: DataStoreItemsClientMessage): void {
+    this._items = { ...this._items, ...message.items };
+    Object.entries(message.items).forEach(([key, value]) => {
+      this.dispatchEvent(new DataStoreItemEvent(key, value));
     });
+    this.dispatchEvent(new DataStoreItemsEvent(message.items));
   }
 
   public get items(): Readonly<typeof this._items> {
@@ -32,10 +30,9 @@ export default class DataStore {
     return this._items[key];
   }
 
-  public setItems(partialItems: { [key: string]: unknown }): this {
+  public setItems(partialItems: Partial<ItemsT>): this {
+    this._items = { ...this._items, ...partialItems };
     Object.entries(partialItems).forEach(([key, value]) => {
-      this._items[key] = value;
-      this.cogsConnection.sendDataStoreItem(key, value);
       this.dispatchEvent(new DataStoreItemEvent(key, value));
     });
     this.dispatchEvent(new DataStoreItemsEvent(partialItems));
@@ -46,14 +43,14 @@ export default class DataStore {
   public addEventListener<K extends keyof DataStoreEventMap>(
     type: K,
     listener: (event: DataStoreEventMap[K]) => void,
-    options: boolean | AddEventListenerOptions
+    options?: boolean | AddEventListenerOptions
   ): void {
     this.#eventTarget.addEventListener(type, listener as EventListener, options);
   }
   public removeEventListener<K extends keyof DataStoreEventMap>(
     type: K,
     listener: (event: DataStoreEventMap[K]) => void,
-    options: boolean | EventListenerOptions
+    options?: boolean | EventListenerOptions
   ): void {
     this.#eventTarget.removeEventListener(type, listener as EventListener, options);
   }
