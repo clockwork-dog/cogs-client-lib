@@ -149,6 +149,8 @@ export interface CogsPluginManifestJson {
         /**
          * When `true` saves this key/value pair to the project folder when the value changes
          * and restores the value when the project is next loaded.
+         *
+         * **This option is only available for COGS plugins**, not for custom Media Master content.
          */
         persistValue?: boolean;
       };
