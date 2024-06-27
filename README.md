@@ -145,6 +145,17 @@ function sendEventToCogs() {
 function sendPortUpdateToCogs() {
   cogsConnection.setState({ port1: 100 });
 }
+
+// Save arbitrary data to COGS
+cogsConnection.store.setItem('my-key', { foo: 1, bar: 'two' });
+
+// Get item from data store
+cogsConnection.store.items.getItem('my-key')
+
+// Listen for data changes
+cogsConnection.store.addEventListener('my-key', ({value}) => {
+  console.log('my-key changed:', value);
+});
 ```
 
 ### Support audio actions
