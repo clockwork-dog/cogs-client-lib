@@ -30,7 +30,7 @@ export default class DataStore {
     return this._items;
   }
 
-  public getItem(key: string): unknown {
+  public getItem(key: string): unknown | undefined {
     return this._items[key];
   }
 
