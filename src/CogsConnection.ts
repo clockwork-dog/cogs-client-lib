@@ -76,8 +76,6 @@ export default class CogsConnection<Manifest extends CogsPluginManifest> {
   ) {
     this.currentState = { ...(initialClientState as ManifestTypes.StateAsObject<Manifest, { writableFromClient: true }>) };
 
-    console.log('CogsConnection', { hostname, port }, new Error().stack);
-
     const { useReconnectingWebsocket, path, pathParams, supportsHttp2Assets } = websocketParametersFromUrl(document.location.href);
 
     // Store the URL parameters for use in asset URLs

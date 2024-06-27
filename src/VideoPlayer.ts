@@ -41,7 +41,6 @@ export default class VideoPlayer {
 
     // Listen for video control messages
     cogsConnection.addEventListener('message', ({ message }) => {
-      console.log('message', message);
       switch (message.type) {
         case 'media_config_update':
           this.setGlobalVolume(message.globalVolume);
